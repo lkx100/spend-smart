@@ -104,19 +104,13 @@
     >
       <!-- Sample previous messages -->
       <div class="alert alert-success text-start chat">Hello! How can I help you today?</div>
-      <style>
-        
-      </style>
-      <div class="alert alert-dark chat d-flex user-chat">Can you tell me more about your services?</div>
-      <div class="alert alert-success chat">Sure! We offer a variety of services including...</div>
     </div>
     </div>
 
-    <div class="chat-input">
-      <div class="input-group">
+    {% csrf_token %}
+    <div class="input-group">
         <input type="text" class="form-control bg-secondary bg-gradient" style="color: white;" id="userInput" placeholder="Type your message here...">
         <button class="btn btn-dark" id="sendBtn" style="color: white; padding: 0.2em;">Send</button>
-      </div>
     </div>
   </div>
   </div>
@@ -128,39 +122,38 @@
     document.getElementById('sendBtn').addEventListener('click', function() {
       var userInput = document.getElementById('userInput').value;
       if (userInput.trim() !== '') {
-        var chatHistory = document.getElementById('chatHistory');
+          var chatHistory = document.getElementById('chatHistory');
   
-        // Add user message
-        var userMessage = document.createElement('div');
-        userMessage.className = 'alert alert-dark text-end chat user-chat';
-        userMessage.textContent = userInput;
-        chatHistory.appendChild(userMessage);
+          // Add user message
+          var userMessage = document.createElement('div');
+          userMessage.className = 'alert alert-dark text-end chat user-chat';
+          userMessage.textContent = userInput;
+          chatHistory.appendChild(userMessage);
   
-        // Clear user input
-        document.getElementById("userInput").value = "";
-        chatHistory.scrollTop = chatHistory.scrollHeight;
+          // Clear user input
+          document.getElementById("userInput").value = "";
+          chatHistory.scrollTop = chatHistory.scrollHeight;
   
-        // Simulate chatbot response with typing animation
-        var botMessage = document.createElement('div');
-        botMessage.className = 'alert alert-success text-start chat';
-        chatHistory.appendChild(botMessage);
-  
-        var responseText = 'This is a response from the chatbot. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate qui expedita quam aliquam. Assumenda illum aspernatur asperiores, magnam tempora neque eius illo excepturi quidem repudiandae. Sed provident vero ea quidem molestias sunt atque natus in obcaecati est, accusamus exercitationem reprehenderit ad veritatis. Alias suscipit dolores eius voluptate ad animi minus.';
-        var index = 0;
-  
-        function typeResponse() {
-          if (index < responseText.length) {
-            botMessage.textContent += responseText.charAt(index);
-            index++;
-            setTimeout(typeResponse, 30); // Adjust typing speed here
-          } else {
-            // Scroll to the bottom after typing is complete
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-          }
-        }
-  
-        typeResponse();
+          // Send message to backend
+          fetch('/process-message/', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+              },
+              body: 'message=' + encodeURIComponent(userInput)
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Extract the text from the nested response structure
+              // Create bot response message
+              var botMessage = document.createElement('div');
+              botMessage.className = 'alert alert-success text-start chat';
+              botMessage.textContent = data.response.response.toString();
+              chatHistory.appendChild(botMessage);
+              chatHistory.scrollTop = chatHistory.scrollHeight;
+          });
       }
-    });
+  });
   </script>
 {% endblock %}

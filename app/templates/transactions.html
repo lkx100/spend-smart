@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+<style>
+  body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.btn-outline-primary {
+  border-radius: 20px;
+}
+</style>
+<div class="container mt-5 text-white">
+  <h1 class="text-center mb-4">Transactions</h1>
+  <div class="row flex justify-content-center">
+    <div class="col-md-3 mb-3">
+      <div class="card text-white bg-success shadow-sm">
+        
+        <div class="card-body">
+          Profit
+          <h5 class="card-title">{{ profit }}</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-white bg-dark shadow-sm">
+        <div class="card-body">
+          Balance
+          <h5 class="card-title">{{ balance }}</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-white bg-danger shadow-sm">
+        
+        <div class="card-body">
+          Expenses
+          <h5 class="card-title">{{ expenses }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mt-5">
+    <h2>All Transactions</h2>
+    <button class="btn btn-secondary">Upload Transactions</button>
+  </div>
+  <table class="table table-hover table-dark  mt-3">
+    <thead class="">
+      <tr>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in transactions %}
+      <tr>
+        <td>{{ transaction.description }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.date }}</td>
+        <td>
+          <button class="btn btn-sm btn-warning" onclick="editTransaction('{{ transaction.id }}', '{{ transaction.description }}', '{{ transaction.amount }}', '{{ transaction.date }}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteTransaction('{{ transaction.id }}')">Delete</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="editTransactionModal" tabindex="-1" aria-labelledby="editTransactionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editTransactionModalLabel">Edit Transaction</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Form for editing transaction -->
+        <form id="editTransactionForm">
+          <div class="mb-3">
+            <label for="editDescription" class="form-label">Description</label>
+            <input type="text" class="form-control" id="editDescription" required>
+          </div>
+          <div class="mb-3">
+            <label for="editAmount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="editAmount" required>
+          </div>
+          <div class="mb-3">
+            <label for="editDate" class="form-label">Date</label>
+            <input type="date" class="form-control" id="editDate" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function editTransaction(id, description, amount, date) {
+    // Populate the form with the transaction data
+    document.getElementById('editDescription').value = description;
+    document.getElementById('editAmount').value = amount;
+    document.getElementById('editDate').value = date;
+    // Show the modal
+    var editModal = new bootstrap.Modal(document.getElementById('editTransactionModal'));
+    editModal.show();
+  }
+
+  function deleteTransaction(id) {
+    if (confirm('Are you sure you want to delete this transaction?')) {
+      // Perform the delete action
+      alert('Transaction deleted');
+    }
+  }
+</script>
+{% endblock %}

@@ -4,7 +4,11 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from .chat_agent import run_flow
 from .models import Tag, GeneralExpense, MonthlyExpense, AnnualExpense
+# adding decorators to restrict access to certain views
+from django.contrib.auth.decorators import login_required
 
 def signup_page(request):
     if request.method == 'POST':
@@ -34,6 +38,10 @@ def signup_page(request):
 
     return render(request, 'signup.html')
 
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
 def login_page(request):
 
     if request.method == 'POST':
@@ -56,8 +64,23 @@ def login_page(request):
 def home(request):
     return render(request, 'index.html')
 
+@login_required(login_url='/login_page/')
 def chatbot_dashboard(request):
     return render(request, 'chatbot_dashboard.html')
+    
+@login_required(login_url='/login_page/')
+def process_message(request):
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        response = run_flow(message)
+        # Create a dictionary wrapper for the response
+        # responseText = response['outputs'][0]['outputs'][0]['results']['message']['data']['text']
+        # print("Response Text:", responseText)
+        response_data = {
+            'response': response
+        }
+        print(response_data)
+        return JsonResponse(response_data)
 
 def logout_page(request):
     logout(request)
@@ -120,3 +143,25 @@ def load_user_transactions(request):
         
     return render(request, 'upload.html')
         
+@login_required(login_url='/login_page/')
+def transactions(request):
+    # Dummy Data
+    transactions = [
+        {'id': 1, 'description': 'Salary', 'amount': 5000, 'date': '2023-10-01'},
+        {'id': 2, 'description': 'Groceries', 'amount': -150, 'date': '2023-10-02'},
+        {'id': 3, 'description': 'Electricity Bill', 'amount': -100, 'date': '2023-10-03'},
+        {'id': 4, 'description': 'Internet Bill', 'amount': -50, 'date': '2023-10-04'},
+        {'id': 5, 'description': 'Freelance Work', 'amount': 800, 'date': '2023-10-05'},
+    ]
+
+    balance = sum(t['amount'] for t in transactions)
+    profit = sum(t['amount'] for t in transactions if t['amount'] > 0)
+    expenses = sum(t['amount'] for t in transactions if t['amount'] < 0)
+
+    context = {
+        'transactions': transactions,
+        'balance': balance,
+        'profit': profit,
+        'expenses': expenses,
+    }
+    return render(request, 'transactions.html', context)
