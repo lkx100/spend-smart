@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
 
 def signup_page(request):
     if request.method == 'POST':
@@ -30,6 +31,10 @@ def signup_page(request):
             messages.info(request, f"Account created successfully")
 
     return render(request, 'signup.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
 
 def login_page(request):
 
