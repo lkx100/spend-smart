@@ -55,3 +55,26 @@ def home(request):
 
 def chatbot_dashboard(request):
     return render(request, 'chatbot_dashboard.html')
+
+
+def transactions(request):
+    # Dummy Data
+    transactions = [
+        {'id': 1, 'description': 'Salary', 'amount': 5000, 'date': '2023-10-01'},
+        {'id': 2, 'description': 'Groceries', 'amount': -150, 'date': '2023-10-02'},
+        {'id': 3, 'description': 'Electricity Bill', 'amount': -100, 'date': '2023-10-03'},
+        {'id': 4, 'description': 'Internet Bill', 'amount': -50, 'date': '2023-10-04'},
+        {'id': 5, 'description': 'Freelance Work', 'amount': 800, 'date': '2023-10-05'},
+    ]
+
+    balance = sum(t['amount'] for t in transactions)
+    profit = sum(t['amount'] for t in transactions if t['amount'] > 0)
+    expenses = sum(t['amount'] for t in transactions if t['amount'] < 0)
+
+    context = {
+        'transactions': transactions,
+        'balance': balance,
+        'profit': profit,
+        'expenses': expenses,
+    }
+    return render(request, 'transactions.html', context)
