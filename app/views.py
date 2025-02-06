@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from .models import Tag, GeneralExpense, MonthlyExpense, AnnualExpense
 
 def signup_page(request):
     if request.method == 'POST':
@@ -64,15 +65,58 @@ def logout_page(request):
 
 def load_user_transactions(request):
     if request.method == "POST" and request.FILES['file']:
-        uploaded_file = request.FILES['file']
-        fs = FileSystemStorage()
-        file_path = fs.save(uploaded_file.name, uploaded_file)
+        try:
+            uploaded_file = request.FILES['file']
+            fs = FileSystemStorage()
+            file_path = fs.save(uploaded_file.name, uploaded_file)
 
-        load_user_transactions = LoadTransactions()
-        transactions_json = load_user_transactions.filter_extract(file_path)
+            full_path = fs.path(file_path)
 
-        print(transactions_json)
+            load_user_transactions = LoadTransactions()
+            transactions = load_user_transactions.filter_extract(full_path)
+            # Debug prints
+            # print("Extracted transactions:", transactions)
+            # print("Type:", type(transactions))
 
-        return render(request, 'success.html')
+            for transaction in transactions:
+                # Clean and validate the transaction data
+                # cleaned = load_user_transactions.clean_transaction(transaction)
+                
+                # Get or create the tag object from the Tag model
+                # tag_obj, created = Tag.objects.get_or_create(name=cleaned.get('tag').lower())
+                
+                # Create the GeneralExpense object
+                GeneralExpense.objects.create(
+                    date=transaction['date'],
+                    name=transaction['name'],
+                    expense=transaction['expense'],
+                    category=transaction['category'],
+                    user=request.user,  # associate with the logged-in user
+                    tag=transaction
+                )
+                print(type(transaction), transaction)
+
+            if transactions and isinstance(transactions, list):
+                # Here you can save to your database
+                
+                # Clean up the file
+                fs.delete(file_path)
+                return render(request, 'success.html', {
+                    'transactions': transactions,
+                    'transaction_count': len(transactions)
+                })
+            else:
+                messages.error(request, "Failed to extract valid transactions from the file")
+                return render(request, 'upload.html')
+        
+        except Exception as e:
+            print(f"Error processing file: {str(e)}")
+            return render(request, 'upload.html')
+        
+        finally:
+            # Ensure file cleanup happens even if there's an error
+            if 'file_path' in locals():
+                fs.delete(file_path)
+        
     return render(request, 'upload.html')
         
