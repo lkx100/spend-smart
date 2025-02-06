@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Chatbot Dashboard{% endblock %}
+{% block body_style %}d-flex h-100 text-center text-bg-dark{% endblock %}
+{% block content %}
+  <div class="container mt-5">
+    
+    <div class="card bg-dark text-white mb-3">
+    <div
+      class="card-body"
+      id="chatHistory"
+      style="height: 400px; overflow-y: scroll"
+    >
+      <!-- Sample previous messages -->
+      <div class="alert alert-secondary">Hello! How can I help you today?</div>
+      <div class="alert alert-secondary">Can you tell me more about your services?</div>
+      <div class="alert alert-secondary">Sure! We offer a variety of services including...</div>
+    </div>
+    </div>
+
+    <div class="card bg-dark text-white">
+      <div class="card-body">
+        <div class="form-group">
+        <input
+          type="text"
+          class="form-control"
+          style="background-color: #6d2b15; color: white;"
+          id="userInput"
+          placeholder="Type your message here..."
+        />
+        </div>
+        <button class="btn btn-primary" id="sendBtn">Send</button>
+      </div>
+      </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    document.getElementById("sendBtn").addEventListener("click", function () {
+    var userInput = document.getElementById("userInput").value;
+    if (userInput.trim() !== "") {
+      var chatHistory = document.getElementById("chatHistory");
+      var userMessage = document.createElement("div");
+      userMessage.className = "alert alert-primary";
+      userMessage.textContent = userInput;
+      chatHistory.appendChild(userMessage);
+      document.getElementById("userInput").value = "";
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+    });
+  </script>
+{% endblock %}
