@@ -47,10 +47,23 @@
       from, to { border-color: transparent; }
       50% { border-color: black; }
     }
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    .chat-input {
+      padding: 1rem;
+      background-color: #001524;
+    }
 </style>
-  <div class="container col-7 mt-5">
+  <div class="container chat-container col-7 mt-5">
     
-    <div class="bg-transparent text-white mb-3">
+    <div class="chat-history bg-transparent text-white mb-3">
     <div
       class="card-body"
       id="chatHistory"
@@ -66,23 +79,13 @@
     </div>
     </div>
 
-    <div class="bg-transparent text-white">
-      <div class="card-body">
-        <div class="input-group">
-          <input
-          type="text"
-          class="form-control bg-secondary bg-gradient"
-          style="color: white;"
-          id="userInput"
-          placeholder="Type your message here..."
-        />
+    <div class="chat-input">
+      <div class="input-group">
+        <input type="text" class="form-control bg-secondary bg-gradient" style="color: white;" id="userInput" placeholder="Type your message here...">
         <button class="btn btn-dark" id="sendBtn" style="color: white; padding: 0.2em;">Send</button>
-        </input>
-        
-        </div>
-        
       </div>
-      </div>
+    </div>
+  </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -116,7 +119,7 @@
           if (index < responseText.length) {
             botMessage.textContent += responseText.charAt(index);
             index++;
-            setTimeout(typeResponse, 50); // Adjust typing speed here
+            setTimeout(typeResponse, 30); // Adjust typing speed here
           } else {
             // Scroll to the bottom after typing is complete
             chatHistory.scrollTop = chatHistory.scrollHeight;
