@@ -16,7 +16,7 @@
     <a class="nav-link" href="{% url 'budget_dashboard' %}">Budget</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">Transactions</a>
+    <a class="nav-link" href="{% url "transactions" %}">Transactions</a>
   </li>
 </ul>
 <style>
@@ -119,7 +119,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-    document.getElementById('sendBtn').addEventListener('click', function() {
+
+    function sendMessage() {
       var userInput = document.getElementById('userInput').value;
       if (userInput.trim() !== '') {
           var chatHistory = document.getElementById('chatHistory');
@@ -154,6 +155,16 @@
               chatHistory.scrollTop = chatHistory.scrollHeight;
           });
       }
+    }
+
+    document.getElementById('userInput').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' || event.keyCode === 13) {
+      sendMessage();
+    }
   });
+    document.getElementById('sendBtn').addEventListener('click',
+    function() {
+      sendMessage();
+    });
   </script>
 {% endblock %}
