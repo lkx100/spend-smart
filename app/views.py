@@ -55,6 +55,9 @@ def login_page(request):
 def home(request):
     return render(request, 'index.html')
 
+def chatbot_dashboard(request):
+    return render(request, 'chatbot_dashboard.html')
+
 def logout_page(request):
     logout(request)
     return render(request, 'login.html')

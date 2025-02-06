@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Chatbot Dashboard{% endblock %}
+{% block body_style %}d-flex h-100 text-center bg-dark bg-gradient{% endblock %}
+{% block content %}
+<ul class="nav nav-pills flex-column p-2">
+  <li class="nav-item">
+    <a href="{% url "home" %}">
+      <img src="{% static 'images/logo.svg' %}" alt="SpendSmart Logo" height="100" class="mb-3" style="animation: floatUp 1.2s ease-out;margin-top: 5px">
+    </a>
+  </li>
+  <li class="nav-item mt-3">
+    <a class="nav-link active" aria-current="page" href="#">Chatbot</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Budget</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Transactions</a>
+  </li>
+</ul>
+<style>
+  body {
+    background-color: #001524;
+  }
+  .chat {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    width: fit-content;
+    max-width: 80%;
+  }
+  .user-chat {
+    justify-self: end;
+  }
+  .typing {
+      display: inline-block;
+      width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 3px solid;
+      animation: typing 2s steps(30, end), blink-caret 0.75s step-end infinite;
+    }
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: black; }
+    }
+  .nav {
+    background: rgba(33, 37, 41, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    height: 100vh;
+    width: 250px; /* Added fixed width */
+    min-width: 250px; /* Ensures minimum width */
+    padding: 1rem; /* Added padding for better spacing */
+  }
+
+  .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-link.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .logo {
+      font-weight: bold;
+      font-size: 1.4em;
+      color: #3498db !important;
+      padding: 0.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+  }
+
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+  }
+  .chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  .chat-input {
+    padding: 1rem;
+  }
+</style>
+  <div class="container chat-container col-7 mt-5">
+    
+    <div class="chat-history bg-transparent text-white mb-3">
+    <div
+      class="card-body"
+      id="chatHistory"
+      style="height: 400px;"
+    >
+      <!-- Sample previous messages -->
+      <div class="alert alert-success text-start chat">Hello! How can I help you today?</div>
+      <style>
+        
+      </style>
+      <div class="alert alert-dark chat d-flex user-chat">Can you tell me more about your services?</div>
+      <div class="alert alert-success chat">Sure! We offer a variety of services including...</div>
+    </div>
+    </div>
+
+    <div class="chat-input">
+      <div class="input-group">
+        <input type="text" class="form-control bg-secondary bg-gradient" style="color: white;" id="userInput" placeholder="Type your message here...">
+        <button class="btn btn-dark" id="sendBtn" style="color: white; padding: 0.2em;">Send</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    document.getElementById('sendBtn').addEventListener('click', function() {
+      var userInput = document.getElementById('userInput').value;
+      if (userInput.trim() !== '') {
+        var chatHistory = document.getElementById('chatHistory');
+  
+        // Add user message
+        var userMessage = document.createElement('div');
+        userMessage.className = 'alert alert-dark text-end chat user-chat';
+        userMessage.textContent = userInput;
+        chatHistory.appendChild(userMessage);
+  
+        // Clear user input
+        document.getElementById("userInput").value = "";
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+  
+        // Simulate chatbot response with typing animation
+        var botMessage = document.createElement('div');
+        botMessage.className = 'alert alert-success text-start chat';
+        chatHistory.appendChild(botMessage);
+  
+        var responseText = 'This is a response from the chatbot. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate qui expedita quam aliquam. Assumenda illum aspernatur asperiores, magnam tempora neque eius illo excepturi quidem repudiandae. Sed provident vero ea quidem molestias sunt atque natus in obcaecati est, accusamus exercitationem reprehenderit ad veritatis. Alias suscipit dolores eius voluptate ad animi minus.';
+        var index = 0;
+  
+        function typeResponse() {
+          if (index < responseText.length) {
+            botMessage.textContent += responseText.charAt(index);
+            index++;
+            setTimeout(typeResponse, 30); // Adjust typing speed here
+          } else {
+            // Scroll to the bottom after typing is complete
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+          }
+        }
+  
+        typeResponse();
+      }
+    });
+  </script>
+{% endblock %}
