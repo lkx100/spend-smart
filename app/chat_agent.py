@@ -26,7 +26,7 @@ def run_flow(message) -> dict:
         print("Response json:", response_json)
         
         # Extract only the text from the nested response
-        response_text = response_json['outputs'][0]['outputs'][0]['results']['message']['data']['text']
+        response_text = response_json['outputs'][0]['outputs'][0]['results']['message']['text']
         # print(response.json(), response_text)
         return {"response": response_text}
     else:
