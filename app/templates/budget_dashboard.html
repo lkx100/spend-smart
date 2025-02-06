@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Budget Dashboard{% endblock %}
+{% block body_style %}d-flex h-100 text-center bg-dark bg-gradient{% endblock %}
+{% block content %}
+<ul class="nav nav-pills flex-column p-2">
+  <li class="nav-item">
+    <a href="{% url "home" %}">
+      <img src="{% static 'images/logo.svg' %}" alt="SpendSmart Logo" height="100" class="mb-3" style="animation: floatUp 1.2s ease-out;margin-top: 5px">
+    </a>
+  </li>
+  <li class="nav-item mt-3">
+    <a class="nav-link" href="{% url 'chatbot_dashboard' %}">Chatbot</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#">Budget</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Transactions</a>
+  </li>
+</ul>
+
+<style>
+  body {
+    background-color: #001524;
+  }
+  .nav {
+    background: rgba(33, 37, 41, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    height: 100vh;
+    width: 250px;
+    min-width: 250px;
+    padding: 1rem;
+  }
+  .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.3s ease;
+  }
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .nav-link.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+  .budget-container {
+    flex: 1;
+    padding: 2rem;
+    color: white;
+  }
+  .expense-card {
+    background: rgba(33, 37, 41, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .add-expense-btn {
+    background: #3498db;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    color: white;
+    transition: all 0.3s ease;
+  }
+  .add-expense-btn:hover {
+    background: #2980b9;
+  }
+</style>
+
+<div class="budget-container">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="expense-card">
+        <h3 class="mb-4">Annual Expenses</h3>
+        {% for expense in annual_expenses %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0">{{ expense.name }}</h5>
+            <small class="text-muted">{{ expense.category }}</small>
+          </div>
+          <div>
+            <span class="h5">₹{{ expense.expense }}</span>
+            <span class="badge bg-primary ms-2">{{ expense.tag.name }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <p>No annual expenses found.</p>
+        {% endfor %}
+        <button class="add-expense-btn mt-3">Add Annual Expense</button>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="expense-card">
+        <h3 class="mb-4">Monthly Expenses</h3>
+        {% for expense in monthly_expenses %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0">{{ expense.name }}</h5>
+            <small class="text-muted">{{ expense.category }}</small>
+          </div>
+          <div>
+            <span class="h5">₹{{ expense.expense }}</span>
+            <span class="badge bg-primary ms-2">{{ expense.tag.name }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <p>No monthly expenses found.</p>
+        {% endfor %}
+        <button class="add-expense-btn mt-3">Add Monthly Expense</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

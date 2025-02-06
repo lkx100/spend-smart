@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from .models import AnnualExpense, MonthlyExpense
 from .load_user_transactions import LoadTransactions
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
@@ -135,3 +136,11 @@ def transactions(request):
         'expenses': expenses,
     }
     return render(request, 'transactions.html', context)
+
+
+def budget_dashboard(request):
+    context = {
+        'annual_expenses': AnnualExpense.objects.all(),
+        'monthly_expenses': MonthlyExpense.objects.all()
+    }
+    return render(request, 'budget_dashboard.html', context)
