@@ -49,7 +49,45 @@
     flex: 1;
     padding: 2rem;
     color: white;
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    /* Customize scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
   }
+
+  /* For Webkit browsers (Chrome, Safari) */
+  .budget-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .budget-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .budget-container::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  .budget-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Ensure content stays within container */
+  .expense-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1rem; /* Adds vertical spacing between items */
+    padding: 1rem;
+  }
+
+  .mb-4.mt-5 {
+    margin-top: 3rem !important; /* Increase space before Monthly Expenses heading */
+}
+
   .expense-card {
     background: rgba(33, 37, 41, 0.6);
     backdrop-filter: blur(10px);
@@ -59,61 +97,88 @@
     margin-bottom: 1rem;
   }
   .add-expense-btn {
-    background: #3498db;
+    background: linear-gradient(45deg, #2196F3, #1976D2);
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
     color: white;
+    font-weight: 500;
     transition: all 0.3s ease;
   }
   .add-expense-btn:hover {
-    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+  }
+
+  .expense-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .expense-name {
+    font-weight: 500;
+    color: #e9ecef;
+    margin-bottom: 0.2rem;
+  }
+
+  .expense-category {
+    font-size: 0.85rem;
+    color: #adb5bd;
+  }
+
+  .expense-amount {
+    font-weight: 600;
+    color: #00ff9d;
+  }
+
+  .expense-tag {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    border: none;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
   }
 </style>
 
 <div class="budget-container">
-  <div class="row">
-    <div class="col-md-6">
-      <div class="expense-card">
-        <h3 class="mb-4">Annual Expenses</h3>
-        {% for expense in annual_expenses %}
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 class="mb-0">{{ expense.name }}</h5>
-            <small class="text-muted">{{ expense.category }}</small>
-          </div>
-          <div>
-            <span class="h5">₹{{ expense.expense }}</span>
-            <span class="badge bg-primary ms-2">{{ expense.tag.name }}</span>
-          </div>
-        </div>
-        {% empty %}
-        <p>No annual expenses found.</p>
-        {% endfor %}
-        <button class="add-expense-btn mt-3">Add Annual Expense</button>
+  <h3 class="mb-4 text-light">Annual Expenses</h3>
+  {% for expense in annual_expenses %}
+  <div class="expense-item">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="expense-name">{{ expense.name }}</h5>
+        <small class="expense-category">{{ expense.category }}</small>
       </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="expense-card">
-        <h3 class="mb-4">Monthly Expenses</h3>
-        {% for expense in monthly_expenses %}
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 class="mb-0">{{ expense.name }}</h5>
-            <small class="text-muted">{{ expense.category }}</small>
-          </div>
-          <div>
-            <span class="h5">₹{{ expense.expense }}</span>
-            <span class="badge bg-primary ms-2">{{ expense.tag.name }}</span>
-          </div>
-        </div>
-        {% empty %}
-        <p>No monthly expenses found.</p>
-        {% endfor %}
-        <button class="add-expense-btn mt-3">Add Monthly Expense</button>
+      <div class="d-flex align-items-center">
+        <span class="expense-amount me-3">₹{{ expense.expense }}</span>
+        <span class="badge expense-tag">{{ expense.tag.name }}</span>
       </div>
     </div>
   </div>
+  {% empty %}
+  <p class="text-muted">No annual expenses found.</p>
+  {% endfor %}
+  <button class="add-expense-btn mt-3">Add Annual Expense</button>
+
+  <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 2rem 0;">
+
+  <h3 class="mb-4 mt-5 text-light">Monthly Expenses</h3>
+  {% for expense in monthly_expenses %}
+  <div class="expense-item">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="expense-name">{{ expense.name }}</h5>
+        <small class="expense-category">{{ expense.category }}</small>
+      </div>
+      <div class="d-flex align-items-center">
+        <span class="expense-amount me-3">₹{{ expense.expense }}</span>
+        <span class="badge expense-tag">{{ expense.tag.name }}</span>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-muted">No monthly expenses found.</p>
+  {% endfor %}
+  <button class="add-expense-btn mt-3">Add Monthly Expense</button>
 </div>
 {% endblock %}
