@@ -217,8 +217,23 @@ def transactions(request):
 
 
 def budget_dashboard(request):
+    annual_expenses = AnnualExpense.objects.all()
+    monthly_expenses = MonthlyExpense.objects.all()
+
+    annual_expenses_values = [expense.expense for expense in annual_expenses]
+    annual_expenses_labels = [expense.name for expense in annual_expenses]
+
+    monthly_expenses_values = [expense.expense for expense in monthly_expenses]
+    monthly_expenses_labels = [expense.name for expense in monthly_expenses]
+
     context = {
-        'annual_expenses': AnnualExpense.objects.all(),
-        'monthly_expenses': MonthlyExpense.objects.all()
+        'annual_expenses': annual_expenses,
+        'monthly_expenses': monthly_expenses,
+        'annual_expenses_values': annual_expenses_values,
+        'annual_expenses_labels': annual_expenses_labels,
+        'monthly_expenses_values': monthly_expenses_values,
+        'monthly_expenses_labels': monthly_expenses_labels,
     }
+    # print(annual_expenses_values)
+
     return render(request, 'budget_dashboard.html', context)
