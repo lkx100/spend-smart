@@ -141,6 +141,14 @@
 </style>
 
 <div class="budget-container">
+  <div class="row d-flex justify-content-between">
+    <div class="col-md-6">
+      <div id="annualExpensesPieChart" class="mt-5"></div>
+    </div>
+    <div class="col-md-6">
+      <div id="monthlyExpensesPieChart" class="mt-5"></div>
+    </div>
+  </div>
   <h3 class="mb-4 text-light">Annual Expenses</h3>
   {% for expense in annual_expenses %}
   <div class="expense-item">
@@ -180,5 +188,50 @@
   <p class="text-muted">No monthly expenses found.</p>
   {% endfor %}
   <button class="add-expense-btn mt-3">Add Monthly Expense</button>
+  
+
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  // Data for annual expenses pie chart
+  var annualExpensesData = {
+    values: {{ annual_expenses_values|safe }},
+    labels: {{ annual_expenses_labels|safe }},
+    type: 'pie'
+  };
+
+  var annualExpensesLayout = {
+    title: 'Annual Expenses',
+    height: 400,
+    width: 500,
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {
+      color: '#fff'
+    }
+  };
+
+  Plotly.newPlot('annualExpensesPieChart', [annualExpensesData], annualExpensesLayout);
+
+  // Data for monthly expenses pie chart
+  var monthlyExpensesData = {
+    values: {{ monthly_expenses_values|safe }},
+    labels: {{ monthly_expenses_labels|safe }},
+    type: 'pie'
+  };
+
+  var monthlyExpensesLayout = {
+    title: 'Monthly Expenses',
+    height: 400,
+    width: 500,
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {
+      color: '#fff'
+    }
+  };
+
+  Plotly.newPlot('monthlyExpensesPieChart', [monthlyExpensesData], monthlyExpensesLayout);
+  </script>
 </div>
+
 {% endblock %}
