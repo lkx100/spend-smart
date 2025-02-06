@@ -94,3 +94,44 @@ def process_message(request):
         }
         print(response_data)
         return JsonResponse(response_data)
+def logout_page(request):
+    logout(request)
+    return render(request, 'login.html')
+
+def load_user_transactions(request):
+    if request.method == "POST" and request.FILES['file']:
+        uploaded_file = request.FILES['file']
+        fs = FileSystemStorage()
+        file_path = fs.save(uploaded_file.name, uploaded_file)
+
+        load_user_transactions = LoadTransactions()
+        transactions_json = load_user_transactions.filter_extract(file_path)
+
+        print(transactions_json)
+
+        return render(request, 'success.html')
+    return render(request, 'upload.html')
+        
+
+
+def transactions(request):
+    # Dummy Data
+    transactions = [
+        {'id': 1, 'description': 'Salary', 'amount': 5000, 'date': '2023-10-01'},
+        {'id': 2, 'description': 'Groceries', 'amount': -150, 'date': '2023-10-02'},
+        {'id': 3, 'description': 'Electricity Bill', 'amount': -100, 'date': '2023-10-03'},
+        {'id': 4, 'description': 'Internet Bill', 'amount': -50, 'date': '2023-10-04'},
+        {'id': 5, 'description': 'Freelance Work', 'amount': 800, 'date': '2023-10-05'},
+    ]
+
+    balance = sum(t['amount'] for t in transactions)
+    profit = sum(t['amount'] for t in transactions if t['amount'] > 0)
+    expenses = sum(t['amount'] for t in transactions if t['amount'] < 0)
+
+    context = {
+        'transactions': transactions,
+        'balance': balance,
+        'profit': profit,
+        'expenses': expenses,
+    }
+    return render(request, 'transactions.html', context)
