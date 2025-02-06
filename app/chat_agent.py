@@ -19,10 +19,16 @@ def run_flow(message) -> dict:
         "input_type": "chat",
     }
     if APPLICATION_TOKEN:
-        print(APPLICATION_TOKEN)
+        # print(APPLICATION_TOKEN)
         headers = {"Authorization": "Bearer " + APPLICATION_TOKEN, "Content-Type": "application/json"}
         response = requests.post(api_url, json=payload, headers=headers)
-        print(response.json())
+        response_json = response.json()
+        print("Response json:", response_json)
+        
+        # Extract only the text from the nested response
+        response_text = response_json['outputs'][0]['outputs'][0]['results']['message']['data']['text']
+        # print(response.json(), response_text)
+        return {"response": response_text}
     else:
         print(f"No API KEY found")
 

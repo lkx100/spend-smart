@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from .chat_agent import run_flow
 
 def signup_page(request):
     if request.method == 'POST':
@@ -80,3 +82,15 @@ def load_user_transactions(request):
         return render(request, 'success.html')
     return render(request, 'upload.html')
         
+def process_message(request):
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        response = run_flow(message)
+        # Create a dictionary wrapper for the response
+        # responseText = response['outputs'][0]['outputs'][0]['results']['message']['data']['text']
+        # print("Response Text:", responseText)
+        response_data = {
+            'response': response
+        }
+        print(response_data)
+        return JsonResponse(response_data)

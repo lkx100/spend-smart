@@ -10,4 +10,5 @@ urlpatterns = [
     path('file_upload/', views.load_user_transactions, name="file_upload"),
     path('chatbot/', views.chatbot_dashboard, name="chatbot_dashboard"),
     path('logout/', views.logout_view, name='logout'),
+    path('process-message/', views.process_message, name='process_message'),
 ]
