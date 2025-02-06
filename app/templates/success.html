@@ -13,4 +13,24 @@
     </div>
 </div>
 
+<br> <br> <hr> <br>
+
+{% if transactions %}
+
+<h1>Transaction Details</h1>
+{% for transaction in transactions %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <p>Transaction Date: {{ transaction.date }}</p>
+            <p>Transaction Amount: {{ transaction.expense }}</p>
+            <p>Transaction Category: {{ transaction.category }}</p>
+        </div>
+    </div>
+    <hr>
+</div>
+{% endfor %}
+
+{% endif %}
+
 {% endblock %}

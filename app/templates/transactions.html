@@ -16,7 +16,7 @@
     <a class="nav-link" href="#">Budget</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="#">Transactions</a>
+    <a class="nav-link active" aria-current="page" href="{% url "transactions" %}">Transactions</a>
   </li>
 </ul>
 <style>
@@ -101,26 +101,33 @@
   </div>
   <div class="d-flex justify-content-between align-items-center mt-5">
     <h2>All Transactions</h2>
-    <button class="btn btn-secondary">Upload Transactions</button>
+    {% comment %} <a href="{% url "file_upload" %}"><button class="btn btn-secondary">Upload Transactions</button></a>
+    <button class="btn btn-primary">Submit</button> {% endcomment %}
+    <!-- Integrated file upload form -->
+    <form method="POST" enctype="multipart/form-data" class="d-flex">
+      {% csrf_token %}
+      <input type="file" id="file" name="file" required class="form-control me-2" style="max-width: 250px;">
+      <button type="submit" class="btn btn-secondary me-2">Upload</button>
+    </form>
+    <!-- Existing Submit button -->
   </div>
   <table class="table table-hover table-dark  mt-3">
     <thead class="">
       <tr>
-        <th>Description</th>
         <th>Amount</th>
         <th>Date</th>
-        <th>Actions</th>
+        <th>Category</th>
       </tr>
     </thead>
     <tbody>
       {% for transaction in transactions %}
       <tr>
-        <td>{{ transaction.description }}</td>
-        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.expense }}</td>
         <td>{{ transaction.date }}</td>
+        <td>{{ transaction.category }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" onclick="editTransaction('{{ transaction.id }}', '{{ transaction.description }}', '{{ transaction.amount }}', '{{ transaction.date }}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteTransaction('{{ transaction.id }}')">Delete</button>
+          <button class="btn btn-sm btn-warning" onclick="editTransaction('{{ transaction.name }}', '{{ transaction.expense }}', '{{ transaction.date }}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteTransaction('{{ transaction.name }}')">Delete</button>
         </td>
       </tr>
       {% endfor %}
