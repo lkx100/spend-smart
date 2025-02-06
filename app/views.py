@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
+from .load_user_transactions import LoadTransactions
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 def signup_page(request):
     if request.method == 'POST':
@@ -53,4 +55,21 @@ def login_page(request):
 def home(request):
     return render(request, 'index.html')
 
+def logout_page(request):
+    logout(request)
+    return render(request, 'login.html')
 
+def load_user_transactions(request):
+    if request.method == "POST" and request.FILES['file']:
+        uploaded_file = request.FILES['file']
+        fs = FileSystemStorage()
+        file_path = fs.save(uploaded_file.name, uploaded_file)
+
+        load_user_transactions = LoadTransactions()
+        transactions_json = load_user_transactions.filter_extract(file_path)
+
+        print(transactions_json)
+
+        return render(request, 'success.html')
+    return render(request, 'upload.html')
+        
