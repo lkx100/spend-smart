@@ -4,6 +4,9 @@ from django.db import models
 class Tag(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 class AnnualExpense(models.Model):
     name = models.CharField(max_length=100)
     expense = models.BigIntegerField()
@@ -11,12 +14,18 @@ class AnnualExpense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_annual_expenses')
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='annual_expenses')
 
+    def __str__(self):
+        return self.name
+
 class MonthlyExpense(models.Model):
     name = models.CharField(max_length=100)
     expense = models.BigIntegerField()
     category = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_monthly_expenses')
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='monthly_expenses')
+
+    def __str__(self):
+        return self.name
 
 class GeneralExpense(models.Model):
     name = models.CharField(max_length=100)

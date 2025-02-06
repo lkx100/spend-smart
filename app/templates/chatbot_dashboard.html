@@ -13,7 +13,7 @@
     <a class="nav-link active" aria-current="page" href="#">Chatbot</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">Budget</a>
+    <a class="nav-link" href="{% url 'budget_dashboard' %}">Budget</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="{% url "transactions" %}">Transactions</a>
@@ -27,6 +27,7 @@
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
     width: fit-content;
     max-width: 80%;
+    padding: 0.7em;
   }
   .user-chat {
     justify-self: end;
@@ -93,6 +94,31 @@
   .chat-input {
     padding: 1rem;
   }
+  /* Add these styles to your existing CSS */
+  .loading-dots {
+    display: inline-block;
+    color: #fff;
+  }
+
+  .loading-dots:after {
+    content: '.';
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+  }
+
+  .loading-message {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    width: fit-content;
+  }
 </style>
   <div class="container chat-container col-7 mt-5">
     
@@ -119,41 +145,48 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-
     function sendMessage() {
       var userInput = document.getElementById('userInput').value;
       if (userInput.trim() !== '') {
-          var chatHistory = document.getElementById('chatHistory');
+        var chatHistory = document.getElementById('chatHistory');
   
-          // Add user message
-          var userMessage = document.createElement('div');
-          userMessage.className = 'alert alert-dark text-end chat user-chat';
-          userMessage.textContent = userInput;
-          chatHistory.appendChild(userMessage);
+        // Add user message
+        var userMessage = document.createElement('div');
+        userMessage.className = 'alert alert-dark text-end chat user-chat';
+        userMessage.textContent = userInput;
+        chatHistory.appendChild(userMessage);
   
-          // Clear user input
-          document.getElementById("userInput").value = "";
+        // Add loading animation
+        var loadingMessage = document.createElement('div');
+        loadingMessage.className = 'loading-message chat';
+        loadingMessage.innerHTML = '<span class="loading-dots">Thinking</span>';
+        chatHistory.appendChild(loadingMessage);
+  
+        // Clear user input and scroll to bottom
+        document.getElementById("userInput").value = "";
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+  
+        // Send message to backend
+        fetch('/process-message/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: 'message=' + encodeURIComponent(userInput)
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Remove loading animation
+          loadingMessage.remove();
+          
+          // Create bot response message
+          var botMessage = document.createElement('div');
+          botMessage.className = 'alert alert-success text-start chat';
+          botMessage.textContent = data.response.response.toString();
+          chatHistory.appendChild(botMessage);
           chatHistory.scrollTop = chatHistory.scrollHeight;
-  
-          // Send message to backend
-          fetch('/process-message/', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-              },
-              body: 'message=' + encodeURIComponent(userInput)
-          })
-          .then(response => response.json())
-          .then(data => {
-              // Extract the text from the nested response structure
-              // Create bot response message
-              var botMessage = document.createElement('div');
-              botMessage.className = 'alert alert-success text-start chat';
-              botMessage.textContent = data.response.response.toString();
-              chatHistory.appendChild(botMessage);
-              chatHistory.scrollTop = chatHistory.scrollHeight;
-          });
+        });
       }
     }
 

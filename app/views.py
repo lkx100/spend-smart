@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from .models import AnnualExpense, MonthlyExpense
 from .load_user_transactions import LoadTransactions
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
@@ -109,14 +110,14 @@ def load_user_transactions(request):
                 # tag_obj, created = Tag.objects.get_or_create(name=cleaned.get('tag').lower())
                 
                 # Create the GeneralExpense object
-                GeneralExpense.objects.create(
-                    date=transaction['date'],
-                    name=transaction['name'],
-                    expense=transaction['expense'],
-                    category=transaction['category'],
-                    user=request.user,  # associate with the logged-in user
-                    tag=transaction
-                )
+                # GeneralExpense.objects.create(
+                #     date=transaction['date'],
+                #     name=transaction['name'],
+                #     expense=transaction['expense'],
+                #     category=transaction['category'],
+                #     user=request.user,  # associate with the logged-in user
+                #     tag=transaction
+                # )
                 print(type(transaction), transaction)
 
             if transactions and isinstance(transactions, list):
@@ -165,3 +166,11 @@ def transactions(request):
         'expenses': expenses,
     }
     return render(request, 'transactions.html', context)
+
+
+def budget_dashboard(request):
+    context = {
+        'annual_expenses': AnnualExpense.objects.all(),
+        'monthly_expenses': MonthlyExpense.objects.all()
+    }
+    return render(request, 'budget_dashboard.html', context)
