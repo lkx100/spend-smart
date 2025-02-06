@@ -8,8 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from .chat_agent import run_flow
 from .models import Tag, GeneralExpense, MonthlyExpense, AnnualExpense
-# adding decorators to restrict access to certain views
 from django.contrib.auth.decorators import login_required
+import random
 
 def signup_page(request):
     if request.method == 'POST':
@@ -103,26 +103,20 @@ def load_user_transactions(request):
             # print("Type:", type(transactions))
 
             for transaction in transactions:
-                # Clean and validate the transaction data
-                # cleaned = load_user_transactions.clean_transaction(transaction)
-                
-                # Get or create the tag object from the Tag model
-                # tag_obj, created = Tag.objects.get_or_create(name=cleaned.get('tag').lower())
-                
+                tag_name = transaction.get('tag') or 'default'
+                tag_obj, created = Tag.objects.get_or_create(name=tag_name.lower())
                 # Create the GeneralExpense object
-                # GeneralExpense.objects.create(
-                #     date=transaction['date'],
-                #     name=transaction['name'],
-                #     expense=transaction['expense'],
-                #     category=transaction['category'],
-                #     user=request.user,  # associate with the logged-in user
-                #     tag=transaction
-                # )
+                GeneralExpense.objects.create(
+                    date=transaction['date'],
+                    name=transaction['name'],
+                    expense=transaction['expense'],
+                    category=transaction['category'] if transaction['category'] else 'None',
+                    user=request.user,  # associate with the logged-in user
+                    tag=tag_obj
+                )
                 print(type(transaction), transaction)
 
             if transactions and isinstance(transactions, list):
-                # Here you can save to your database
-                
                 # Clean up the file
                 fs.delete(file_path)
                 return render(request, 'success.html', {
@@ -143,29 +137,83 @@ def load_user_transactions(request):
                 fs.delete(file_path)
         
     return render(request, 'upload.html')
-        
+
+
 @login_required(login_url='/login_page/')
 def transactions(request):
-    # Dummy Data
-    transactions = [
-        {'id': 1, 'description': 'Salary', 'amount': 5000, 'date': '2023-10-01'},
-        {'id': 2, 'description': 'Groceries', 'amount': -150, 'date': '2023-10-02'},
-        {'id': 3, 'description': 'Electricity Bill', 'amount': -100, 'date': '2023-10-03'},
-        {'id': 4, 'description': 'Internet Bill', 'amount': -50, 'date': '2023-10-04'},
-        {'id': 5, 'description': 'Freelance Work', 'amount': 800, 'date': '2023-10-05'},
-    ]
+    all_transactions = GeneralExpense.objects.filter(user=request.user).order_by('-date')
 
-    balance = sum(t['amount'] for t in transactions)
-    profit = sum(t['amount'] for t in transactions if t['amount'] > 0)
-    expenses = sum(t['amount'] for t in transactions if t['amount'] < 0)
+    if request.method == "POST" and request.FILES['file']:
+        try:
+            uploaded_file = request.FILES['file']
+            fs = FileSystemStorage()
+            file_path = fs.save(uploaded_file.name, uploaded_file)
 
-    context = {
-        'transactions': transactions,
-        'balance': balance,
-        'profit': profit,
-        'expenses': expenses,
-    }
-    return render(request, 'transactions.html', context)
+            full_path = fs.path(file_path)
+
+            load_user_transactions = LoadTransactions()
+            transactions = load_user_transactions.filter_extract(full_path)
+            # Debug prints
+            # print("Extracted transactions:", transactions)
+            # print("Type:", type(transactions))
+
+            for transaction in transactions:
+                tag_name = transaction.get('tag') or 'default'
+                tag_obj, created = Tag.objects.get_or_create(name=tag_name.lower())
+                # Create the GeneralExpense object
+                GeneralExpense.objects.create(
+                    date=transaction['date'],
+                    name=transaction['name'],
+                    expense=transaction['expense'],
+                    category=transaction['category'] if transaction['category'] else 'None',
+                    user=request.user,  # associate with the logged-in user
+                    tag=tag_obj
+                )
+                print(type(transaction), transaction)
+
+            if transactions and isinstance(transactions, list):
+                # Clean up the file
+                fs.delete(file_path)
+
+                transaction_list = []
+                for exp in all_transactions:
+                    transaction_list.append({
+                        'amount': exp.expense,           
+                        'date': str(exp.date),           
+                        'category': exp.category,
+                        'tag': exp.tag.name if exp.tag else ""
+                    })
+
+                balance = sum(t['amount'] for t in transaction_list)
+                profit = sum(t['amount'] for t in transaction_list if t['amount'] > 0)
+                expenses = sum(t['amount'] for t in transaction_list if t['amount'] < 0)
+
+                context = {
+                    'transactions': all_transactions,
+                    'balance': balance,
+                    'profit': profit,
+                    'expenses': expenses,
+                }
+                return render(request, 'transactions.html', context)
+
+                # return render(request, 'transactions.html', {
+                #     'transactions': transactions,
+                #     'transaction_count': len(transactions)
+                # })
+            else:
+                messages.error(request, "Failed to extract valid transactions from the file")
+                return render(request, 'upload.html')
+        
+        except Exception as e:
+            print(f"Error processing file: {str(e)}")
+            return render(request, 'upload.html')
+        
+        finally:
+            # Ensure file cleanup happens even if there's an error
+            if 'file_path' in locals():
+                fs.delete(file_path)
+        
+    return render(request, 'transactions.html')
 
 
 def budget_dashboard(request):

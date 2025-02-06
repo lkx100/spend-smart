@@ -36,22 +36,8 @@ class LoadTransactions():
     def __init__(self):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-    # def clean_transaction(self, transaction):
-    #     """Clean and validate a single transaction"""
-    #     return {
-    #         'date': transaction.get('date', ''),
-    #         'name': transaction.get('name', '').lower(),
-    #         'expense': float(transaction.get('expense', 0)),
-    #         'category': transaction.get('category', '').lower(),
-    #         'tag': transaction.get('tag')
-    #     }
-
     def filter_extract(self, file_path):
         try:
-            # with open(file_path, 'rb') as file:
-            #     file_bytes = file.read()
-            # file_content = file_bytes.decode('utf-8', errors='ignore')
-            # print(file_content)
 
             pdf_reader = PdfReader(file_path)
             text_content = ""
