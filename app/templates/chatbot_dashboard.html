@@ -5,7 +5,9 @@
 {% block content %}
 <ul class="nav nav-pills flex-column p-2">
   <li class="nav-item">
-    <img src="{% static 'images/logo.svg' %}" alt="SpendSmart Logo" height="100" class="mb-3" style="animation: floatUp 1.2s ease-out;margin-top: 5px">
+    <a href="{% url "home" %}">
+      <img src="{% static 'images/logo.svg' %}" alt="SpendSmart Logo" height="100" class="mb-3" style="animation: floatUp 1.2s ease-out;margin-top: 5px">
+    </a>
   </li>
   <li class="nav-item mt-3">
     <a class="nav-link active" aria-current="page" href="#">Chatbot</a>
