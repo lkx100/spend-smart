@@ -142,6 +142,26 @@
   <main class="px-3">
     <img src="{% static 'images/logo.svg' %}" alt="SpendSmart Logo" height="120" class="mb-3" style="animation: floatUp 1.2s ease-out;">
     <p class="lead mt-2 lead-text">The next revolution in personal finance.</p>
+    {% if user.is_authenticated %}
+      <div id="typing-greeting" class="typing" style="font-family:'Poppins', sans-serif; font-size:2rem;"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          var i = 0;
+          var text = "Hi {{ user.first_name|default:user.username }}! 👋";
+          var speed = 100; // milliseconds between characters
+
+          function typeWriter() {
+            if (i < text.length) {
+              document.getElementById("typing-greeting").innerHTML += text.charAt(i);
+              i++;
+              setTimeout(typeWriter, speed);
+            }
+          }
+          typeWriter();
+        });
+      </script>
+    {% endif %}
+    <br>
     <p class="lead">
       <a href="{% url "chatbot_dashboard" %}" class="btn btn-light fw-bold border-white bg-white">Let's Chat</a>
     </p>
