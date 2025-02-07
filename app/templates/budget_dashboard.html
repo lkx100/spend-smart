@@ -138,6 +138,54 @@
     padding: 0.3rem 0.8rem;
     font-size: 0.8rem;
   }
+
+  .expense-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(33, 37, 41, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+  }
+
+  .form-container {
+    color: white;
+  }
+
+  .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: none;
+  }
+
+  .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .form-control option {
+    background: #212529;
+    color: white;
+  }
+
+  .form-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
 </style>
 
 <div class="budget-container">
@@ -188,49 +236,141 @@
   <p class="text-muted">No monthly expenses found.</p>
   {% endfor %}
   <button class="add-expense-btn mt-3">Add Monthly Expense</button>
-  
+
+  <!-- Annual Expense Form -->
+  <div id="annualExpenseForm" class="expense-form" style="display: none;">
+    <form class="form-container" method="POST" action="{% url 'add_annual_expense' %}">
+      {% csrf_token %}
+      <h4 class="mb-3">Add Annual Expense</h4>
+      <div class="mb-3">
+        <input type="text" name="name" class="form-control" placeholder="Expense Name" required>
+      </div>
+      <div class="mb-3">
+        <input type="number" name="expense" class="form-control" placeholder="Amount" required>
+      </div>
+      <div class="mb-3">
+        <select name="category" class="form-control" required>
+          <option value="">Select Category</option>
+          <option value="Housing">Housing</option>
+          <option value="Insurance">Insurance</option>
+          <option value="Tax">Tax</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <select name="tag" class="form-control" required>
+          <option value="">Select Tag</option>
+          <option value="Essential">Essential</option>
+          <option value="Non-Essential">Non-Essential</option>
+          <option value="Investment">Investment</option>
+        </select>
+      </div>
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Monthly Expense Form -->
+  <div id="monthlyExpenseForm" class="expense-form" style="display: none;">
+    <form class="form-container" method="POST" action="{% url 'add_monthly_expense' %}">
+      {% csrf_token %}
+      <h4 class="mb-3">Add Monthly Expense</h4>
+      <div class="mb-3">
+        <input type="text" name="name" class="form-control" placeholder="Expense Name" required>
+      </div>
+      <div class="mb-3">
+        <input type="number" name="expense" class="form-control" placeholder="Amount" required>
+      </div>
+      <div class="mb-3">
+        <select name="category" class="form-control" required>
+          <option value="">Select Category</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Groceries">Groceries</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <select name="tag" class="form-control" required>
+          <option value="">Select Tag</option>
+          <option value="Essential">Essential</option>
+          <option value="Non-Essential">Non-Essential</option>
+          <option value="Investment">Investment</option>
+        </select>
+      </div>
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
 
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script>
-  // Data for annual expenses pie chart
-  var annualExpensesData = {
-    values: {{ annual_expenses_values|safe }},
-    labels: {{ annual_expenses_labels|safe }},
-    type: 'pie'
-  };
+  <script>
+    // Data for annual expenses pie chart
+    var annualExpensesData = {
+      values: {{ annual_expenses_values|safe }},
+      labels: {{ annual_expenses_labels|safe }},
+      type: 'pie'
+    };
 
-  var annualExpensesLayout = {
-    title: 'Annual Expenses',
-    height: 400,
-    width: 500,
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    font: {
-      color: '#fff'
-    }
-  };
+    var annualExpensesLayout = {
+      title: 'Annual Expenses',
+      height: 400,
+      width: 500,
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      font: {
+        color: '#fff'
+      }
+    };
 
-  Plotly.newPlot('annualExpensesPieChart', [annualExpensesData], annualExpensesLayout);
+    Plotly.newPlot('annualExpensesPieChart', [annualExpensesData], annualExpensesLayout);
 
-  // Data for monthly expenses pie chart
-  var monthlyExpensesData = {
-    values: {{ monthly_expenses_values|safe }},
-    labels: {{ monthly_expenses_labels|safe }},
-    type: 'pie'
-  };
+    // Data for monthly expenses pie chart
+    var monthlyExpensesData = {
+      values: {{ monthly_expenses_values|safe }},
+      labels: {{ monthly_expenses_labels|safe }},
+      type: 'pie'
+    };
 
-  var monthlyExpensesLayout = {
-    title: 'Monthly Expenses',
-    height: 400,
-    width: 500,
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    font: {
-      color: '#fff'
-    }
-  };
+    var monthlyExpensesLayout = {
+      title: 'Monthly Expenses',
+      height: 400,
+      width: 500,
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      font: {
+        color: '#fff'
+      }
+    };
 
-  Plotly.newPlot('monthlyExpensesPieChart', [monthlyExpensesData], monthlyExpensesLayout);
+    Plotly.newPlot('monthlyExpensesPieChart', [monthlyExpensesData], monthlyExpensesLayout);
+
+    // Add this before the existing script closing tag
+    document.addEventListener('DOMContentLoaded', function() {
+      const annualBtn = document.querySelector('.add-expense-btn');
+      const monthlyBtn = document.querySelectorAll('.add-expense-btn')[1];
+      const annualForm = document.getElementById('annualExpenseForm');
+      const monthlyForm = document.getElementById('monthlyExpenseForm');
+      
+      annualBtn.addEventListener('click', () => {
+        annualForm.style.display = 'block';
+      });
+
+      monthlyBtn.addEventListener('click', () => {
+        monthlyForm.style.display = 'block';
+      });
+
+      document.querySelectorAll('.cancel-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.target.closest('.expense-form').style.display = 'none';
+        });
+      });
+    });
   </script>
 </div>
 

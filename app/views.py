@@ -237,3 +237,43 @@ def budget_dashboard(request):
     # print(annual_expenses_values)
 
     return render(request, 'budget_dashboard.html', context)
+
+@login_required(login_url='/login_page/')
+def add_annual_expense(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        expense = request.POST.get('expense')
+        category = request.POST.get('category')
+        tag_name = request.POST.get('tag')
+        
+        tag, _ = Tag.objects.get_or_create(name=tag_name)
+        
+        AnnualExpense.objects.create(
+            name=name,
+            expense=expense,
+            category=category,
+            user=request.user,
+            tag=tag
+        )
+        return redirect('budget_dashboard')
+    return redirect('budget_dashboard')
+
+@login_required(login_url='/login_page/')
+def add_monthly_expense(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        expense = request.POST.get('expense')
+        category = request.POST.get('category')
+        tag_name = request.POST.get('tag')
+        
+        tag, _ = Tag.objects.get_or_create(name=tag_name)
+        
+        MonthlyExpense.objects.create(
+            name=name,
+            expense=expense,
+            category=category,
+            user=request.user,
+            tag=tag
+        )
+        return redirect('budget_dashboard')
+    return redirect('budget_dashboard')
